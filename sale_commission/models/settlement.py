@@ -1,19 +1,18 @@
-# -*- coding: utf-8 -*-
-# © 2011 Pexego Sistemas Informáticos (<http://www.pexego.es>)
-# © 2015 Avanzosc (<http://www.avanzosc.es>)
-# © 2015 Pedro M. Baeza (<http://www.serviciosbaeza.com>)
-# License AGPL-3 - See http://www.gnu.org/licenses/agpl-3.0.html
+# Copyright 2014-2018 Tecnativa - Pedro M. Baeza
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from openerp import api, exceptions, fields, models, _
+from odoo import api, exceptions, fields, models, _
+from odoo.exceptions import UserError
 
 
 class Settlement(models.Model):
     _name = "sale.commission.settlement"
-    _rec_name = "agent"
+    _description = "Settlement"
 
     def _default_currency(self):
         return self.env.user.company_id.currency_id.id
 
+    name = fields.Char('Name')
     total = fields.Float(compute="_compute_total", readonly=True, store=True)
     date_from = fields.Date(string="From")
     date_to = fields.Date(string="To")
@@ -35,7 +34,11 @@ class Settlement(models.Model):
     currency_id = fields.Many2one(
         comodel_name='res.currency', readonly=True,
         default=_default_currency)
-    company_id = fields.Many2one('res.company', 'Company')
+    company_id = fields.Many2one(
+        comodel_name='res.company',
+        default=lambda self: self.env.user.company_id,
+        required=True
+    )
 
     @api.depends('lines', 'lines.settled_amount')
     def _compute_total(self):
@@ -70,45 +73,38 @@ class Settlement(models.Model):
         }
 
     def _prepare_invoice_header(self, settlement, journal, date=False):
-        invoice_obj = self.env['account.invoice']
-        invoice_vals = {
+        invoice = self.env['account.invoice'].new({
             'partner_id': settlement.agent.id,
             'type': ('in_invoice' if journal.type == 'purchase' else
                      'in_refund'),
             'date_invoice': date,
             'journal_id': journal.id,
-            'company_id': self.env.user.company_id.id,
+            'company_id': settlement.company_id.id,
             'state': 'draft',
-        }
-        # Get other invoice values from partner onchange
-        invoice_vals.update(invoice_obj.onchange_partner_id(
-            type=invoice_vals['type'],
-            partner_id=invoice_vals['partner_id'],
-            company_id=invoice_vals['company_id'])['value'])
-        return invoice_vals
+        })
+        # Get other invoice values from onchanges
+        invoice._onchange_partner_id()
+        invoice._onchange_journal_id()
+        return invoice._convert_to_write(invoice._cache)
 
-    def _prepare_invoice_line(self, settlement, invoice_vals, product):
-        invoice_line_obj = self.env['account.invoice.line']
-        invoice_line_vals = {
+    def _prepare_invoice_line(self, settlement, invoice, product):
+        invoice_line = self.env['account.invoice.line'].new({
+            'invoice_id': invoice.id,
             'product_id': product.id,
             'quantity': 1,
-        }
+        })
         # Get other invoice line values from product onchange
-        invoice_line_vals.update(invoice_line_obj.product_id_change(
-            product=invoice_line_vals['product_id'], uom_id=False,
-            type=invoice_vals['type'], qty=invoice_line_vals['quantity'],
-            partner_id=invoice_vals['partner_id'],
-            fposition_id=invoice_vals['fiscal_position'])['value'])
-        # Put line taxes
-        invoice_line_vals['invoice_line_tax_id'] = \
-            [(6, 0, tuple(invoice_line_vals['invoice_line_tax_id']))]
+        invoice_line._onchange_product_id()
+        invoice_line_vals = invoice_line._convert_to_write(invoice_line._cache)
         # Put commission fee
-        invoice_line_vals['price_unit'] = settlement.total
+        if invoice.type == 'in_refund':
+            invoice_line_vals['price_unit'] = -settlement.total
+        else:
+            invoice_line_vals['price_unit'] = settlement.total
         # Put period string
-        partner = self.env['res.partner'].browse(invoice_vals['partner_id'])
         lang = self.env['res.lang'].search(
-            [('code', '=', partner.lang or self.env.context.get('lang',
-                                                                'en_US'))])
+            [('code', '=', invoice.partner_id.lang or
+              self.env.context.get('lang', 'en_US'))])
         date_from = fields.Date.from_string(settlement.date_from)
         date_to = fields.Date.from_string(settlement.date_to)
         invoice_line_vals['name'] += "\n" + _('Period: from %s to %s') % (
@@ -123,36 +119,41 @@ class Settlement(models.Model):
         """
         return []
 
+    def create_invoice_header(self, journal, date):
+        """Hook that can be used in order to group invoices or
+        find open invoices
+        """
+        invoice_vals = self._prepare_invoice_header(self, journal, date=date)
+        return self.env['account.invoice'].create(invoice_vals)
+
     @api.multi
-    def make_invoices(self, journal, refund_journal, product, date=False):
-        invoice_obj = self.env['account.invoice']
+    def make_invoices(self, journal, product, date=False):
+        invoice_line_obj = self.env['account.invoice.line']
         for settlement in self:
             # select the proper journal according to settlement's amount
             # considering _add_extra_invoice_lines sum of values
             extra_invoice_lines = self._add_extra_invoice_lines(settlement)
-            extra_total = sum(x['price_unit'] for x in extra_invoice_lines)
-            invoice_journal = (journal if
-                               (settlement.total + extra_total) >= 0 else
-                               refund_journal)
-            invoice_vals = self._prepare_invoice_header(
-                settlement, invoice_journal, date=date)
-            invoice_lines_vals = []
-            invoice_lines_vals.append(self._prepare_invoice_line(
-                settlement, invoice_vals, product))
-            invoice_lines_vals += extra_invoice_lines
-            # invert invoice values if it's a refund
-            if invoice_vals['type'] == 'in_refund':
-                for line in invoice_lines_vals:
-                    line['price_unit'] = -line['price_unit']
-            invoice_vals['invoice_line'] = [(0, 0, x)
-                                            for x in invoice_lines_vals]
-            invoice = invoice_obj.create(invoice_vals)
-            settlement.state = 'invoiced'
-            settlement.invoice = invoice.id
+            invoice = settlement.create_invoice_header(journal, date)
+            invoice_line_vals = self._prepare_invoice_line(
+                settlement, invoice, product)
+            invoice_line_obj.create(invoice_line_vals)
+            invoice.compute_taxes()
+            for invoice_line_vals in extra_invoice_lines:
+                invoice_line_obj.create(invoice_line_vals)
+            settlement.write({
+                'state': 'invoiced',
+                'invoice': invoice.id,
+            })
+        if self.env.context.get('no_check_negative', False):
+            return
+        for settlement in self:
+            if settlement.invoice.amount_total < 0:
+                raise UserError(_('Value cannot be negative'))
 
 
 class SettlementLine(models.Model):
     _name = "sale.commission.settlement.line"
+    _description = "Line of a commission settlement"
 
     settlement = fields.Many2one(
         "sale.commission.settlement", readonly=True, ondelete="cascade",
@@ -164,16 +165,31 @@ class SettlementLine(models.Model):
     date = fields.Date(related="agent_line.invoice_date", store=True)
     invoice_line = fields.Many2one(
         comodel_name='account.invoice.line', store=True,
-        related='agent_line.invoice_line')
+        related='agent_line.object_id')
     invoice = fields.Many2one(
         comodel_name='account.invoice', store=True, string="Invoice",
         related='invoice_line.invoice_id')
     agent = fields.Many2one(
         comodel_name="res.partner", readonly=True, related="agent_line.agent",
         store=True)
-    settled_amount = fields.Float(
+    settled_amount = fields.Monetary(
         related="agent_line.amount", readonly=True, store=True)
+    currency_id = fields.Many2one(
+        related="agent_line.currency_id",
+        store=True,
+        readonly=True,
+    )
     commission = fields.Many2one(
         comodel_name="sale.commission", related="agent_line.commission")
-    company_id = fields.Many2one('res.company', 'Company',
-                                 related="settlement.company_id", store=True)
+    company_id = fields.Many2one(
+        comodel_name='res.company',
+        related='settlement.company_id',
+    )
+
+    @api.constrains('settlement', 'agent_line')
+    def _check_company(self):
+        for record in self:
+            if record.agent_line.company_id != record.company_id:
+                raise UserError(_(
+                    'Company must be the same'
+                ))
