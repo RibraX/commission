@@ -102,6 +102,7 @@ msgstr ""
 msgid "Unit Price"
 msgstr ""
 
+<<<<<<< HEAD
 #. module: sale_commission_formula
 #: model_terms:ir.ui.view,arch_db:sale_commission_formula.sale_commission_form
 msgid "discount"
@@ -127,3 +128,5 @@ msgstr ""
 msgid "quantity"
 msgstr ""
 
+=======
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78

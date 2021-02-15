@@ -24,7 +24,10 @@ msgstr "Provision"
 #. module: sale_commission_pricelist
 #: model:ir.model,name:sale_commission_pricelist.model_product_pricelist_item
 #, fuzzy
+<<<<<<< HEAD
 #| msgid "Pricelist item"
+=======
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
 msgid "Pricelist Item"
 msgstr "Preislistenposition"
 

@@ -8,11 +8,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2017-12-14 15:14+0000\n"
 "PO-Revision-Date: 2020-02-20 16:53+0000\n"
 "Last-Translator: Marcel Savegnago <marcel.savegnago@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/oca/teams/"
 "23907/pt_BR/)\n"
+=======
+"POT-Creation-Date: 2021-02-04 17:16+0000\n"
+"PO-Revision-Date: 2020-02-20 16:53+0000\n"
+"Last-Translator: Marcel Savegnago <marcel.savegnago@gmail.com>\n"
+"Language-Team: Portuguese (Brazil) (https://www.transifex.com/oca/"
+"teams/23907/pt_BR/)\n"
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -123,6 +131,7 @@ msgstr "Tipo"
 msgid "Unit Price"
 msgstr "Preço Unitário"
 
+<<<<<<< HEAD
 #. module: sale_commission_formula
 #: model_terms:ir.ui.view,arch_db:sale_commission_formula.sale_commission_form
 msgid "discount"
@@ -147,6 +156,22 @@ msgstr "product_uom_qty"
 #: model_terms:ir.ui.view,arch_db:sale_commission_formula.sale_commission_form
 msgid "quantity"
 msgstr "quantidade"
+=======
+#~ msgid "discount"
+#~ msgstr "desconto"
+
+#~ msgid "price_subtotal"
+#~ msgstr "price_subtotal"
+
+#~ msgid "price_unit"
+#~ msgstr "price_unit"
+
+#~ msgid "product_uom_qty"
+#~ msgstr "product_uom_qty"
+
+#~ msgid "quantity"
+#~ msgstr "quantidade"
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
 
 #~ msgid "account.invoice.line.agent"
 #~ msgstr "account.invoice.line.agent"

@@ -20,6 +20,23 @@ class SaleOrder(models.Model):
         compute="_compute_commission_total",
         store=True,
     )
+<<<<<<< HEAD
+=======
+    agent_ids = fields.Many2many(
+        "res.partner", string="Agents", compute="_compute_agents",
+        search="_search_agents")
+
+    @api.multi
+    def _compute_agents(self):
+        for so in self:
+            so.agent_ids = [(6, 0, so.mapped("order_line.agents.agent").ids)]
+
+    @api.model
+    def _search_agents(self, operator, value):
+        sol_agents = self.env["sale.order.line.agent"].search(
+            [("agent", operator, value)])
+        return [('id', 'in', sol_agents.mapped("object_id.order_id").ids)]
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
 
     def recompute_lines_agents(self):
         self.mapped('order_line').recompute_agents()

@@ -9,16 +9,27 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2017-12-14 15:14+0000\n"
 "PO-Revision-Date: 2020-06-11 19:19+0000\n"
+=======
+"POT-Creation-Date: 2021-02-04 17:16+0000\n"
+"PO-Revision-Date: 2021-02-04 18:19+0100\n"
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
 "Last-Translator: Pedro M. Baeza <pedro.baeza@gmail.com>\n"
 "Language-Team: Spanish (https://www.transifex.com/oca/teams/23907/es/)\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
+<<<<<<< HEAD
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 3.10\n"
+=======
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Poedit 2.3\n"
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
 
 #. module: sale_commission_formula
 #: model_terms:ir.ui.view,arch_db:sale_commission_formula.sale_commission_form
@@ -50,9 +61,14 @@ msgstr "Campos comunes de las líneas de factura"
 
 #. module: sale_commission_formula
 #: selection:sale.commission,commission_type:0
+<<<<<<< HEAD
 #, fuzzy
 msgid "By sections"
 msgstr "Instrucciones"
+=======
+msgid "By sections"
+msgstr "Por secciones"
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
 
 #. module: sale_commission_formula
 #: model:ir.model,name:sale_commission_formula.model_sale_commission
@@ -72,7 +88,11 @@ msgstr "Campo"
 #. module: sale_commission_formula
 #: selection:sale.commission,commission_type:0
 msgid "Fixed percentage"
+<<<<<<< HEAD
 msgstr ""
+=======
+msgstr "Porcentaje fijo"
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
 
 #. module: sale_commission_formula
 #: model:ir.model.fields,field_description:sale_commission_formula.field_sale_commission__formula
@@ -117,12 +137,17 @@ msgstr "Subtotal"
 #. module: sale_commission_formula
 #: model:ir.model.fields,field_description:sale_commission_formula.field_sale_commission__commission_type
 msgid "Type"
+<<<<<<< HEAD
 msgstr ""
+=======
+msgstr "Tipo"
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
 
 #. module: sale_commission_formula
 #: model_terms:ir.ui.view,arch_db:sale_commission_formula.sale_commission_form
 msgid "Unit Price"
 msgstr "Precio Unitario"
+<<<<<<< HEAD
 
 #. module: sale_commission_formula
 #: model_terms:ir.ui.view,arch_db:sale_commission_formula.sale_commission_form
@@ -154,3 +179,5 @@ msgstr "cantidad"
 
 #~ msgid "sale.order.line.agent"
 #~ msgstr "sale.order.line.agent"
+=======
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78

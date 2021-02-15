@@ -8,3 +8,9 @@
 * Oihane Crucelaegui <oihanecruce@gmail.com>
 * Nicola Malcontenti <nicola.malcontenti@agilebg.com>
 * Aitor Bouzas <aitor.bouzas@adaptivecity.com>
+<<<<<<< HEAD
+=======
+* `TAKOBI <https://takobi.online>`__:
+
+  * Lorenzo Battistini
+>>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
