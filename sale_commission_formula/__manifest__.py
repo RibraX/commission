@@ -5,7 +5,6 @@
 {
     'name': 'Sale Commission Formula',
     'version': '12.0.1.0.0',
-=======
 # Copyright 2016 Nicola Malcontenti - Agile Business Group
 # Copyright 2016 Davide Corio - Abstract
 # Copyright 2021 Tecnativa - Pedro M. Baeza
@@ -13,7 +12,6 @@
 {
     'name': 'Sale Commission Formula',
     'version': '12.0.1.1.0',
->>>>>>> c38d3c70d1d36c1318024b5e8e31d01cf595ce78
     'category': 'Sale',
     'license': 'AGPL-3',
     'summary': 'Sale commissions computed by formulas',
